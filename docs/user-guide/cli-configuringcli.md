@@ -100,39 +100,35 @@ zowe profiles create zosmf myprofile -H <myhost> -P <myport> -u <myuser> --pw <m
 After you create a profile, verify that it can communicate with z/OSMF. For more information, see [Testing Zowe CLI connection to z/OSMF](#testing-zowe-cli-connection-to-zosmf).
 
 ### Defining Environment Variables
-You can define environment variables in your environment to execute commands more efficiently. You can store a value, such as your password, in an environment variable, then issue commands without specifying your password every time. The term environment refers to your operating system, but it can also refer to an automation server, such as Jenkins or a Docker container. In this section we explain how to transform arguments and options from Zowe CLI commands into environment variables and define them with a value. 
-In this section we explain how to transform arguments and options from Zowe CLI commands into environment variables and define them with a value. 
+You can define environment variables in your environment to execute commands more efficiently. You can store a value, such as your password, in an environment variable, then issue commands without specifying your password every time. The term environment refers to your operating system, but it can also refer to an automation server, such as Jenkins or a Docker container. 
 
-  - **Assigning an environment variable for a value that is commonly used.**
+The following are several use cases for environment variables:
 
-    For example, you might want to specify your mainframe user name as an
+  - **Assign an environment variable for a value that is commonly used.**
+
+    Specify your mainframe username as an
     environment variable on your computer. When you issue a command and omit
     the `--username` argument, Zowe CLI automatically uses the
     value that you defined in the environment variable. You can now
-    issue a command or create any profile type without specifying your
-    user name repeatedly.
+    issue commands or create any profile type without specifying your
+    username repeatedly.
 
-  - **Overriding a value that is used in existing profiles.**  
+  - **Override a value that is used in existing profiles.**  
   
-    For example, you might want to override a value that you previously
-    set on multiple profiles to avoid recreating each profile.This
-    reduces the number of profiles that you need to maintain and lets
-    you avoid specifying every option on command line for one-off
-    commands.
+    Override a value that you previously set on multiple profiles to avoid recreating each profile. This reduces the number of profiles that you need to maintain and lets you avoid specifying every option on command line for one-off commands.
 
-  - **Specifying environment variables in a Jenkins environment (or other automation server) to store credentials securely.**  
+  - **Define values in a Jenkins environment (or other automation server) to store credentials securely.**  
   
-    You can set values in Jenkins environment variables for use in
-    scripts that run in your CI/CD pipeline. You can define Jenkins
-    environment variables in the same manner that you can on your computer. You
-    can also define sensitive information in the Jenkins secure
-    credential store. For example, you might need to define your mainframe
+    Set values in Jenkins environment variables for use in pipeline
+    scripts. You can define sensitive information in the Jenkins secure
+    credential store. For example, you might want to define your mainframe
     password in the secure credential store so that it is not available
     in plain text.
 
 #### Transforming arguments/options to environment variable format
 
 Transform the option/argument into the correct format for a Zowe CLI environment variable, then define values to the new variable.
+
 The following rules apply to this transformation:
 
   - Prefix environment variables with `ZOWE_OPT_`
