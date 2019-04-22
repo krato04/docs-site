@@ -1,7 +1,7 @@
 # Configuring Zowe CLI 
 This section explains how to define and verify your connection to the mainframe through the CLI. You can also configure CLI settings, such as the level of detail produced in logs and the location of the home directory on your computer.
 
-**Note** The configuration for the CLI is stored on your computer in a directory such as C:\Users\user01\.zowe. The configuration includes log files, your profile information, and CLI plug-ins that are installed. When you troubleshoot an issue with the CLI, the log files in the imperative and zowe folders contain valuable information.
+**Note:** The configuration for the CLI is stored on your computer in a directory such as C:\Users\user01\.zowe. The configuration includes log files, your profile information, and CLI plug-ins that are installed. When you troubleshoot an issue with the CLI, the log files in the imperative and zowe folders contain valuable information.
 
 - [Defining Zowe CLI connection details](#defining-zowe-cli-connection-details)
 - [Testing Zowe CLI connection to z/OSMF](#testing-zowe-cli-connection-to-zosmf) 
@@ -11,40 +11,45 @@ This section explains how to define and verify your connection to the mainframe 
 
 ## Defining Zowe CLI connection details
 
-Zowe CLI has a *command option order of precedence* that lets you define arguments and options for commands in multiple ways (command-line, environment variables, and profiles). This provides flexibility when you issue commands and write automation scripts. This topic explains order of precedence and different methods for specifying your mainframe connection details. 
-
-  - [Understanding command option order of precedence](#understanding-command-option-order-of-precedence)
-  - [Creating Zowe CLI profiles](#creating-zowe-cli-profiles)
-  - [Defining environment variables](#defining-environment-variables)
-  - [Integrating with API Mediation Layer](#integrating-with-api-mediation-layer)
+Zowe CLI has a *command option order of precedence* that lets you define arguments and options for commands in multiple ways (command line, environment variables, and profiles). This provides flexibility when you issue commands and write automation scripts. This topic explains the order of precedence and the different methods for specifying your mainframe connection details. 
 
 ### Understanding command option order of precedence
 
-Before you issue commands, it is helpful to understand the command option order of precedence. The following is the order in which Zowe CLI *searches for* your command arguments and options when you issue a command:
+"Command option precedence" is the order in which Zowe CLI "searches for" your command arguments and options when you issue a command:
 
-1.  Arguments and options that you specify directly on the command line.
-2.  Environment variables that you define in the computer's operating system. For more information, see [Defining Environment Variables](#defining-environment-variables)
-3.  User profiles that you create.
-4.  The default value for the argument or option.
+1.  **Arguments and options** 
 
-The affect of the order is that if you omit an argument/option from the command line, Zowe CLI searches for an environment variable that contains a value that you defined for the argument/option. If Zowe CLI does not find a value for the argument/option in an environment variable, Zowe CLI searches your user profiles for the value that you defined for the option/argument. If Zowe CLI does not find a value for the argument/option in your profiles, Zowe CLI executes the command using the default value for the argument/option.
+    Define connection details directly on the command-line.
+
+2.  **Environment variables** 
+    
+    Define environment variables the computer's operating system. For more information, see [Defining environment variables](#defining-environment-variables)
+3.  **User profiles**
+
+    Create profiles to store connection details for a particular system. For more information, see [Creating Zowe CLI profiles](#creating-zowe-cli-profiles)
+
+4.  **The default value**
+
+    If you do not specify values in any of the former methods, the default value is used for that option. 
+
+For example, if you omit an argument/option from the command line, Zowe CLI searches for an environment variable defined with a value for that option. If Zowe CLI does not find a value in an environment variable, it searches your user profiles for the value that you defined for the option/argument. If Zowe CLI does not find a value for the option in your profiles, it executes the command using the default value for the argument/option.
 
 **Note:** If a required option or argument value is not located, you receive a syntax error message that states `Missing Positional Argument` or `Missing Option.`
 
 ### Creating Zowe CLI profiles
 
-Profiles are a Zowe CLI function that lets you store configuration information for use on multiple commands. You can create a profile that contains your username, password, and connection details for a particular mainframe system, then reuse that profile to avoid typing it again on every command. You can switch between profiles to quickly target different mainframe subsystems. 
+Profiles let you store configuration details for use on multiple commands. You can create a profile that contains your username, password, and connection details for a particular mainframe system, then reuse that profile to avoid typing it again on every command. Switch between profiles to quickly target different mainframe subsystems.
 
 Profiles are **not** required to use the CLI. You can choose to specify all connection details in options on every command.
 
 #### Displaying profiles help
-To learn about the options available for creating zosmf profiles, issue the following command. Refer to the available options in the help text to define your profile:
+To learn about the options available for creating `zosmf` profiles, issue the following command. Refer to the options in the help to define your profile:
 
 ```
 zowe profiles create zosmf-profile --help
 ```
 
-#### Create and use a profile
+#### Creating and Using a profile
 
 Create a profile, then use the profile when you issue a command.
 
@@ -59,10 +64,20 @@ zowe profiles create zosmf-profile myprofile123 --host host123 --port port123 --
 Issue the following command to list all data sets under the username ibmuser on the system specified in `myprofile123`:
 
 ```
-zowe zos-files list data-set "ibmuser.* --zosmf-profile myprofile123
+zowe zos-files list data-set "ibmuser.*" --zosmf-profile myprofile123
 ```
 
 After you create a profile, verify that it can communicate with z/OSMF. For more information, see [Testing Connection to z/OSMF](#testing-zowe-cli-connection-to-zosmf).
+
+#### Rejecting/Accepting Self-Signed z/OSMF Certificates
+
+When you enter commands or a create a profile, a z/OSMF certificate is required to authenticate your access to the mainframe. You can provide a certificate to z/OSMF, or set the `--reject-unauthorized` flag to `false` to bypass the certificate request. The flag is set to true by default. 
+
+**Example:**
+
+```
+zowe profiles create zosmf-profile zos124 --host zos124 --user ibmuser --password myp4ss --reject-unauthorized false
+```
 
 #### Creating a profile that acesses API Mediation Layer 
 
@@ -186,14 +201,20 @@ zowe zosmf check status -H <myhost> -P <myport> -u <myuser> --pw <mypass> --base
 
 You can issue a command at any time to receive diagnostic information from the server and confirm that Zowe CLI can communicate with z/OSMF or other mainframe APIs. 
 
-**Tip:** Append `--help` to the end of commands in the product to see the complete set of commands and options available to you. For example, issue `zowe profiles --help` to learn more about how to list profiles, switch your default profile, or create different profile types.
-
-**Without a Profile**
+**Without a profile**
 
 Verify that your CLI can communicate with z/OSMF:
 
 ```
 zowe zosmf check status --host <host> --port <port> --user <username> --pass <password> 
+```
+
+**Without a profile, accepting self-signed certificates**
+
+When you enter commands or a create a profile, a z/OSMF certificate is required to authenticate your access to the mainframe. If you do not have certificates configured to access z/OSMF, you can bypass the certificate requirement by specifying the `--reject-unauthorized` false flag:
+
+```
+zowe zosmf check status --host <host> --port <port> --user <username> --pass <password> --reject-unauthorized false
 ```
 
 **Default profile**
